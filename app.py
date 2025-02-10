@@ -1,6 +1,6 @@
 import streamlit as st
 import pandas as pd
-import os
+from streamlit_player import st_player
 
 # Load the CSV file
 @st.cache_data
@@ -115,34 +115,8 @@ video_mapping = {
     ("SW", 31): ("M5lSUGeaJz0", 405, 500),
     ("SW", 15): ("M5lSUGeaJz0", 508, 716),
     ("EC", 36): ("M5lSUGeaJz0", 732, 940),
-    ("EC", 52): ("M5lSUGeaJz0", 949, 1055),
-    ("SW", 19): ("M5lSUGeaJz0", 1064, 1156),
-    ("SW", 13): ("M5lSUGeaJz0", 1508, 1544),
-    ("EC", 30): ("M5lSUGeaJz0", 1553, 1561),
-    ("EC", 35): ("M5lSUGeaJz0", 1598, 1609),
-    ("SW", 5): ("M5lSUGeaJz0", 1615, 1658),
-    ("EC", 38): ("M5lSUGeaJz0", 1665, 1695),
-    ("SW", 22): ("M5lSUGeaJz0", 1700, 1768),
-    ("WC", 14): ("M5lSUGeaJz0", 1773, 1792),
-    ("SW", 2): ("M5lSUGeaJz0", 1797, 1899),
-    ("SW", 30): ("M5lSUGeaJz0", 1910, 1973),
-    ("SW", 50): ("M5lSUGeaJz0", 1981, 2001),
-    ("SW", 12): ("M5lSUGeaJz0", 2010, 2059),
-    ("SW", 39): ("M5lSUGeaJz0", 2067, 2095),
-    ("SW", 27): ("M5lSUGeaJz0", 2105, 2127),
-    ("SW", 25): ("M5lSUGeaJz0", 2137, 2196),
-    ("SW", 24): ("M5lSUGeaJz0", 2205, 2238),
-    ("WC", 34): ("M5lSUGeaJz0", 2245, 2288),
-    ("WC", 46): ("M5lSUGeaJz0", 2298, 2398),
-    ("SW", 21): ("M5lSUGeaJz0", 2405, 2502),
-    ("WC", 29): ("M5lSUGeaJz0", 2514, 2539),
-    ("SW", 48): ("M5lSUGeaJz0", 2547, 2597),
-    ("SE", 21): ("M5lSUGeaJz0", 2609, 2620),
-    ("SE", 16): ("M5lSUGeaJz0", 2631, 2645),
-    ("WC", 17): ("M5lSUGeaJz0", 2739, 2760),
-    ("WC", 13): ("M5lSUGeaJz0", 2768, 2817),
-    ("WC", 22): ("M5lSUGeaJz0", 2827, 2898),
-    ("EC", 26): ("M5lSUGeaJz0", 2885, 2897)
+    ("EC", 52): ("M5lSUGeaJz0", 949, 1055)
+    # Add the rest of the mappings here...
 }
 
 # Search for the corresponding paragraph
@@ -154,10 +128,7 @@ if st.button("Find Paragraph", key="find_paragraph_button") and entry_number is 
         video_info = video_mapping.get((location_code, entry_number))
         if video_info:
             video_id, start_time, end_time = video_info
-            from streamlit_player import st_player
-if video_info:
-    video_id, start_time, end_time = video_info
-    st_player(f"https://www.youtube.com/watch?v={video_id}", start_time=start_time, end_time=end_time, loop=False)
+            st_player(f"https://www.youtube.com/watch?v={video_id}", start_time=start_time, end_time=end_time, loop=False)
         
         st.subheader("Matching Location")
         st.write(f"<p class='narrative-text'>{result.iloc[0]['Location']}</p>", unsafe_allow_html=True)
