@@ -24,6 +24,15 @@ st.title("Vertical Loop Motion Calculator")
 st.sidebar.header("Input Parameters")
 loop_position = st.sidebar.selectbox("Select Loop Position:", ["Top of the Loop", "Bottom of the Loop"], key="unique_loop_position")
 
+# Displaying force diagram based on the loop position
+try:
+    if loop_position == "Top of the Loop":
+        st.image("top_loop.png", caption="Forces at the Top of the Loop")
+    elif loop_position == "Bottom of the Loop":
+        st.image("bottom_loop.png", caption="Forces at the Bottom of the Loop")
+except FileNotFoundError:
+    st.warning("Image not found. Please ensure 'top_loop.png' and 'bottom_loop.png' are in the correct directory.")
+
 calculation_type = st.sidebar.selectbox("What would you like to solve for:", ["Centripetal Acceleration", "Tangential Velocity", "Radius of the Loop", "Mass", "Centripetal Force", "Normal/Tension Force", "Gravitational Force"], key="unique_calculation_type")
 
 g = 10  # Gravity (m/s²)
