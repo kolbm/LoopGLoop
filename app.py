@@ -128,7 +128,11 @@ if st.button("Find Paragraph", key="find_paragraph_button") and entry_number is 
         video_info = video_mapping.get((location_code, entry_number))
         if video_info:
             video_id, start_time, end_time = video_info
-            st_player(f"https://www.youtube.com/watch?v={video_id}", start_time=start_time, end_time=end_time, loop=False)
+            st.markdown(f"""
+            <iframe width="560" height="315" 
+            src="https://www.youtube.com/embed/{video_id}?start={start_time}&end={end_time}&autoplay=1&controls=0" 
+            frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+            """, unsafe_allow_html=True)
         
         st.subheader("Matching Location")
         st.write(f"<p class='narrative-text'>{result.iloc[0]['Location']}</p>", unsafe_allow_html=True)
