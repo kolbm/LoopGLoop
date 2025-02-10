@@ -25,12 +25,12 @@ if option == "Calculate Velocity at Top":
     st.write(f"Minimum Velocity Required at the Top: {velocity_top:.2f} m/s")
 
 elif option == "Calculate Velocity at Bottom":
-    velocity_top = st.sidebar.number_input("Velocity at Top (m/s)", min_value=0.0, value=5.0, step=0.1)
+    velocity_top = st.sidebar.number_input("Velocity at Top (m/s)", min_value=0.0, value=5.0, step=0.1, key=f"velocity_top_{option}")
     velocity_bot = velocity_bottom(velocity_top, radius, g)
     st.write(f"Velocity at the Bottom: {velocity_bot:.2f} m/s")
 
 elif option == "Check if Object Will Fall":
-    velocity_top = st.sidebar.number_input("Velocity at Top (m/s)", min_value=0.0, value=5.0, step=0.1)
+    velocity_top = st.sidebar.number_input("Velocity at Top (m/s)", min_value=0.0, value=5.0, step=0.1, key=f"velocity_top_{option}")
     falls = will_fall(velocity_top, radius, g)
     if falls:
         st.error("The object will fall at the top of the loop!")
@@ -38,10 +38,10 @@ elif option == "Check if Object Will Fall":
         st.success("The object will stay on track at the top of the loop.")
 
 elif option == "Calculate Loop Radius":
-    velocity_top = st.sidebar.number_input("Velocity at Top (m/s)", min_value=0.0, value=5.0, step=0.1)
+    velocity_top = st.sidebar.number_input("Velocity at Top (m/s)", min_value=0.0, value=5.0, step=0.1, key=f"velocity_top_{option}")
     radius = (velocity_top ** 2) / g
     st.write(f"Required Loop Radius: {radius:.2f} m")
-    velocity_top = st.sidebar.number_input("Velocity at Top (m/s)", min_value=0.0, value=5.0, step=0.1)
+    velocity_top = st.sidebar.number_input("Velocity at Top (m/s)", min_value=0.0, value=5.0, step=0.1, key=f"velocity_top_{option}")
     falls = will_fall(velocity_top, radius, g)
     if falls:
         st.error("The object will fall at the top of the loop!")
