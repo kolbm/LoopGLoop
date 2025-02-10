@@ -16,11 +16,12 @@ def will_fall(velocity_top, radius, g=10):
 st.title("Vertical Loop Motion Calculator")
 
 st.sidebar.header("Input Parameters")
-calculation_type = st.sidebar.selectbox("What would you like to solve for:", ["Centripetal Acceleration", "Tangential Velocity", "Radius of the Loop", "Mass", "Normal Force", "Gravitational Force", "Centripetal Force"])
+
 if calculation_type in ["Normal Force", "Gravitational Force", "Centripetal Force"]:
     mass = st.sidebar.number_input("Mass (kg)", min_value=0.1, value=1.0, step=0.1)  # Mass is required for force calculations
 loop_position = st.sidebar.selectbox("Select Loop Position:", ["Top of the Loop", "Bottom of the Loop"])
-calculation_type = st.sidebar.selectbox("What would you like to solve for:", ["Centripetal Acceleration", "Tangential Velocity", "Radius of the Loop", "Mass", "Normal Force", "Gravitational Force", "Centripetal Force"])
+
+calculation_type = st.sidebar.selectbox("What would you like to solve for:", ["Centripetal Acceleration", "Tangential Velocity", "Radius of the Loop", "Mass", "Normal Force", "Gravitational Force", "Centripetal Force"], key="calculation_select")
 option = st.sidebar.radio("Choose Calculation:",
                           ["Calculate Minimum Velocity at Top", "Calculate Velocity at Bottom", "Check if Object Will Fall", "Calculate Loop Radius"])
 
