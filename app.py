@@ -15,6 +15,12 @@ def will_fall(velocity_top, radius, g=10):
 
 st.title("Vertical Loop Motion Calculator")
 
+# Displaying force diagram based on the loop position
+if loop_position == "Top of the Loop":
+    st.image("top_loop.png", caption="Forces at the Top of the Loop")
+elif loop_position == "Bottom of the Loop":
+    st.image("bottom_loop.png", caption="Forces at the Bottom of the Loop")
+
 st.sidebar.header("Input Parameters")
 loop_position = st.sidebar.selectbox("Select Loop Position:", ["Top of the Loop", "Bottom of the Loop"], key="loop_position")
 calculation_type = st.sidebar.selectbox("What would you like to solve for:", ["Centripetal Acceleration", "Tangential Velocity", "Radius of the Loop", "Mass", "Normal Force", "Gravitational Force", "Centripetal Force"], key="calculation_type")
