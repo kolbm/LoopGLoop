@@ -1,71 +1,70 @@
 import streamlit as st
 import numpy as np
 
-def minimum_velocity_top(radius, g=10):
-    return np.sqrt(g * radius)
+def calculate_centripetal_acceleration(v, r):
+    return v**2 / r
 
-def velocity_bottom(velocity_top, radius, g=10):
-    return np.sqrt(velocity_top**2 + 2 * g * radius)
+def calculate_tangential_velocity(a, r):
+    return np.sqrt(a * r)
 
-def calculate_radius(velocity_top, g=10):
-    return velocity_top**2 / g
+def calculate_radius(v, a):
+    return v**2 / a
 
-def will_fall(velocity_top, radius, g=10):
-    return velocity_top < minimum_velocity_top(radius, g)
+def calculate_centripetal_force(m, v, r):
+    return m * v**2 / r
+
+def calculate_gravitational_force(m, g=10):
+    return m * g
+
+def calculate_normal_or_tension_force(m, v, r, g=10):
+    return m * (v**2 / r + g)
 
 st.title("Vertical Loop Motion Calculator")
-
-
 
 st.sidebar.header("Input Parameters")
 loop_position = st.sidebar.selectbox("Select Loop Position:", ["Top of the Loop", "Bottom of the Loop"], key="unique_loop_position")
 
-# Displaying force diagram based on the loop position
-if loop_position == "Top of the Loop":
-    st.image("top_loop.png", caption="Forces at the Top of the Loop")
-elif loop_position == "Bottom of the Loop":
-    st.image("bottom_loop.png", caption="Forces at the Bottom of the Loop")
-calculation_type = st.sidebar.selectbox("What would you like to solve for:", ["Centripetal Acceleration", "Tangential Velocity", "Radius of the Loop", "Mass", "Normal Force", "Gravitational Force", "Centripetal Force"], key="unique_calculation_type")
-
-if calculation_type in ["Normal Force", "Gravitational Force", "Centripetal Force"]:
-    mass = st.sidebar.number_input("Mass (kg)", min_value=0.1, value=1.0, step=0.1, key="unique_mass")  # Mass is required for force calculations
-
-if calculation_type in ["Normal Force", "Gravitational Force", "Centripetal Force"]:
-    mass = st.sidebar.number_input("Mass (kg)", min_value=0.1, value=1.0, step=0.1, key="unique_mass")  # Mass is required for force calculations
-loop_position = st.sidebar.selectbox("Select Loop Position:", ["Top of the Loop", "Bottom of the Loop"], key="unique_loop_position")
-
-# Displaying force diagram based on the loop position
-if loop_position == "Top of the Loop":
-    st.image("top_loop.png", caption="Forces at the Top of the Loop")
-elif loop_position == "Bottom of the Loop":
-    st.image("bottom_loop.png", caption="Forces at the Bottom of the Loop")
-
-calculation_type = st.sidebar.selectbox("What would you like to solve for:", ["Centripetal Acceleration", "Tangential Velocity", "Radius of the Loop", "Mass", "Normal Force", "Gravitational Force", "Centripetal Force"], key="unique_calculation_type")
-option = st.sidebar.radio("Choose Calculation:", ["Calculate Minimum Velocity at Top", "Calculate Velocity at Bottom", "Check if Object Will Fall", "Calculate Loop Radius"], key="calculation_option")
+calculation_type = st.sidebar.selectbox("What would you like to solve for:", ["Centripetal Acceleration", "Tangential Velocity", "Radius of the Loop", "Mass", "Centripetal Force", "Normal/Tension Force", "Gravitational Force"], key="unique_calculation_type")
 
 g = 10  # Gravity (m/s²)
 
-if option == "Calculate Minimum Velocity at Top":
-    radius = st.sidebar.number_input("Loop Radius (m)", min_value=0.1, value=5.0, step=0.1)
-    velocity_top = minimum_velocity_top(radius, g)
-    st.write(f"Minimum Velocity Required at the Top: {velocity_top:.2f} m/s")
+if calculation_type == "Centripetal Acceleration":
+    radius = st.sidebar.number_input("Radius (m)", min_value=0.1, value=5.0, step=0.1)
+    velocity = st.sidebar.number_input("Tangential Velocity (m/s)", min_value=0.0, value=5.0, step=0.1)
+    acceleration = calculate_centripetal_acceleration(velocity, radius)
+    st.write(f"Centripetal Acceleration: {acceleration:.2f} m/s²")
 
-elif option == "Calculate Velocity at Bottom":
-    radius = st.sidebar.number_input("Loop Radius (m)", min_value=0.1, value=5.0, step=0.1)
-    velocity_top = st.sidebar.number_input("Velocity at Top (m/s)", min_value=0.0, value=5.0, step=0.1, key="velocity_bottom")
-    velocity_bot = velocity_bottom(velocity_top, radius, g)
-    st.write(f"Velocity at the Bottom: {velocity_bot:.2f} m/s")
+elif calculation_type == "Tangential Velocity":
+    acceleration = st.sidebar.number_input("Centripetal Acceleration (m/s²)", min_value=0.1, value=5.0, step=0.1)
+    radius = st.sidebar.number_input("Radius (m)", min_value=0.1, value=5.0, step=0.1)
+    velocity = calculate_tangential_velocity(acceleration, radius)
+    st.write(f"Tangential Velocity: {velocity:.2f} m/s")
 
-elif option == "Check if Object Will Fall":
-    radius = st.sidebar.number_input("Loop Radius (m)", min_value=0.1, value=5.0, step=0.1)
-    velocity_top = st.sidebar.number_input("Velocity at Top (m/s)", min_value=0.0, value=5.0, step=0.1, key="check_fall")
-    falls = will_fall(velocity_top, radius, g)
-    if falls:
-        st.error("The object will fall at the top of the loop!")
-    else:
-        st.success("The object will stay on track at the top of the loop.")
+elif calculation_type == "Radius of the Loop":
+    velocity = st.sidebar.number_input("Tangential Velocity (m/s)", min_value=0.0, value=5.0, step=0.1)
+    acceleration = st.sidebar.number_input("Centripetal Acceleration (m/s²)", min_value=0.1, value=5.0, step=0.1)
+    radius = calculate_radius(velocity, acceleration)
+    st.write(f"Radius of the Loop: {radius:.2f} m")
 
-elif option == "Calculate Loop Radius":
-    velocity_top = st.sidebar.number_input("Velocity at Top (m/s)", min_value=0.0, value=5.0, step=0.1, key="calculate_radius")
-    radius = calculate_radius(velocity_top, g)
-    st.write(f"Required Loop Radius: {radius:.2f} m")
+elif calculation_type == "Mass":
+    acceleration = st.sidebar.number_input("Acceleration (m/s²)", min_value=0.1, value=5.0, step=0.1)
+    st.write("Mass input required for specific calculations later.")
+
+elif calculation_type == "Centripetal Force":
+    radius = st.sidebar.number_input("Radius (m)", min_value=0.1, value=5.0, step=0.1)
+    velocity = st.sidebar.number_input("Tangential Velocity (m/s)", min_value=0.0, value=5.0, step=0.1)
+    mass = st.sidebar.number_input("Mass (kg)", min_value=0.1, value=1.0, step=0.1)
+    force = calculate_centripetal_force(mass, velocity, radius)
+    st.write(f"Centripetal Force: {force:.2f} N")
+
+elif calculation_type == "Normal/Tension Force":
+    radius = st.sidebar.number_input("Radius (m)", min_value=0.1, value=5.0, step=0.1)
+    velocity = st.sidebar.number_input("Tangential Velocity (m/s)", min_value=0.0, value=5.0, step=0.1)
+    mass = st.sidebar.number_input("Mass (kg)", min_value=0.1, value=1.0, step=0.1)
+    force = calculate_normal_or_tension_force(mass, velocity, radius, g)
+    st.write(f"Normal/Tension Force: {force:.2f} N")
+
+elif calculation_type == "Gravitational Force":
+    mass = st.sidebar.number_input("Mass (kg)", min_value=0.1, value=1.0, step=0.1)
+    force = calculate_gravitational_force(mass, g)
+    st.write(f"Gravitational Force: {force:.2f} N")
