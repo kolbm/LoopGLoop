@@ -14,11 +14,11 @@ st.title("Vertical Loop Motion Calculator")
 
 st.sidebar.header("Input Parameters")
 option = st.sidebar.radio("Choose Calculation:",
-                          ["Calculate Velocity at Top", "Calculate Velocity at Bottom", "Check if Object Will Fall"])
+                          ["Calculate Velocity at Top", "Calculate Velocity at Bottom", "Check if Object Will Fall", "Calculate Loop Radius"])
 
 radius = st.sidebar.number_input("Loop Radius (m)", min_value=0.1, value=5.0, step=0.1)
 
-g = 9.81  # Gravity (m/s²)
+g = 10  # Gravity (m/s²)
 
 if option == "Calculate Velocity at Top":
     velocity_top = minimum_velocity_top(radius, g)
@@ -30,6 +30,17 @@ elif option == "Calculate Velocity at Bottom":
     st.write(f"Velocity at the Bottom: {velocity_bot:.2f} m/s")
 
 elif option == "Check if Object Will Fall":
+    velocity_top = st.sidebar.number_input("Velocity at Top (m/s)", min_value=0.0, value=5.0, step=0.1)
+    falls = will_fall(velocity_top, radius, g)
+    if falls:
+        st.error("The object will fall at the top of the loop!")
+    else:
+        st.success("The object will stay on track at the top of the loop.")
+
+elif option == "Calculate Loop Radius":
+    velocity_top = st.sidebar.number_input("Velocity at Top (m/s)", min_value=0.0, value=5.0, step=0.1)
+    radius = (velocity_top ** 2) / g
+    st.write(f"Required Loop Radius: {radius:.2f} m")
     velocity_top = st.sidebar.number_input("Velocity at Top (m/s)", min_value=0.0, value=5.0, step=0.1)
     falls = will_fall(velocity_top, radius, g)
     if falls:
