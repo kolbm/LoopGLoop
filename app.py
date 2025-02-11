@@ -1,143 +1,79 @@
 import streamlit as st
-import pandas as pd
-from streamlit_player import st_player
+import numpy as np
 
-# Load the CSV file
-@st.cache_data
-def load_data():
-    file_path = "case_data.csv"
-    return pd.read_csv(file_path, encoding="latin1")
+def calculate_centripetal_acceleration(v, r):
+    return v**2 / r
 
-df = load_data()
+def calculate_tangential_velocity(a, r):
+    return np.sqrt(a * r)
 
-# Mapping location codes to detailed, context-based names
-location_mapping = {
-    "SE": "Kenward Olick's Residence & Surrounding Tenement",
-    "SW": "Societies Club - Langdale Pike's Gathering Place",
-    "NW": "Davenport's Law Office on Baker Street",
-    "WC": "Dr. Trevelyan's Home & Medical Practice",
-    "-": "Tower of London Vicinity - Dockside & Market",
-    "EC": "Customs House & St. Mary Church Courtyard"
-}
+def calculate_radius(v, a):
+    return v**2 / a
 
-df["Location"] = df["Location Code"].map(location_mapping)
+def calculate_centripetal_force(m, v, r):
+    return m * v**2 / r
 
-# Extract unique location codes for the dropdown menu
-location_codes = sorted(df["Location Code"].unique())
+def calculate_gravitational_force(m, g=10):
+    return m * g
 
-# Streamlit UI Styling
-background_css = """
-<style>
-    .stApp {
-        background-image: url('https://raw.githubusercontent.com/kolbm/SHCDCase3/main/background.jpg');
-        background-size: cover;
-        background-position: center;
-        background-attachment: fixed;
-    }
-    .stTitle, .stMarkdown, .stSubheader, .stTextInput > div > div > input, .narrative-text, .stSelectbox > div > div {
-        color: black !important; font-family: 'Courier New', Courier, monospace !important;
-    }
-    .stTitle {
-        font-size: 40px !important;
-        text-align: center;
-    }
-    .stTextInput > div > div > input {
-        font-size: 24px !important;
-        text-align: center;
-        width: 80px !important;
-    }
-    .stButton > button { font-size: 24px !important; border-radius: 10px; font-family: 'Courier New', Courier, monospace !important; padding: 10px 20px; background-color: silver !important; color: black !important; font-weight: bold; border: 2px solid black; }
-    .stButton > button[data-testid="clear_button"] { background-color: red !important; color: white !important; font-weight: bold !important; border: 2px solid black; }
-    .stButton > button[data-testid="find_paragraph_button"] { background-color: green !important; color: white !important; font-weight: bold !important; border: 2px solid black; }
-    .keypad-container {
-        display: flex;
-        justify-content: center;
-        flex-wrap: wrap;
-        gap: 10px;
-        max-width: 250px;
-        margin: auto;
-    }
-</style>
-"""
+def calculate_normal_or_tension_force(m, v, r, g=10):
+    return m * (v**2 / r + g)
 
-st.markdown(background_css, unsafe_allow_html=True)
+st.title("Vertical Loop Motion Calculator")
 
-# Title
-st.image('https://raw.githubusercontent.com/kolbm/SHCDCase3/refs/heads/main/title_picture.png', use_container_width=True)
+st.sidebar.header("Input Parameters")
+loop_position = st.sidebar.selectbox("Select Loop Position:", ["Top of the Loop", "Bottom of the Loop"], key="unique_loop_position")
 
-st.write("Enter a Location Code and Entry Number to retrieve the corresponding paragraph.")
-
-# User input fields
-st.write("### <span style='color: black;'>Location Code</span>", unsafe_allow_html=True)
-location_code = st.selectbox("", location_codes)
-
-# Initialize session state for entry_number if not set
-if "entry_number" not in st.session_state:
-    st.session_state.entry_number = ""
-
-# Keypad entry number
-st.write("### <span style='color: black;'>Enter Entry Number</span>", unsafe_allow_html=True)
-entry_number_display = st.text_input("", st.session_state.entry_number, max_chars=2, key="entry_number_display", disabled=True)
-
-def update_entry_number(num):
-    if len(st.session_state.entry_number) < 2:
-        st.session_state.entry_number += num
-        st.rerun()
-
-def clear_entry_number():
-    st.session_state.entry_number = ""
-    st.rerun()
-
-# Keypad layout
-keypad_buttons = [["1", "2", "3"], ["4", "5", "6"], ["7", "8", "9"], ["", "0", ""]]
-st.markdown("<div class='keypad-container'>", unsafe_allow_html=True)
-for row in keypad_buttons:
-    cols = st.columns(3)
-    for i, button in enumerate(row):
-        if button:
-            with cols[i]:
-                if st.button(button, key=f"btn_{button}"):
-                    update_entry_number(button)
-st.markdown("</div>", unsafe_allow_html=True)
-
-# Clear button
-if st.button("Clear Entry Number", key="clear_button"):
-    clear_entry_number()
-
-# Ensure the entry number is a valid integer
+# Displaying force diagram based on the loop position
 try:
-    entry_number = int(st.session_state.entry_number) if st.session_state.entry_number else None
-except ValueError:
-    entry_number = None
+    if loop_position == "Top of the Loop":
+        st.image("top_loop.png", caption="Forces at the Top of the Loop")
+    elif loop_position == "Bottom of the Loop":
+        st.image("bottom_loop.png", caption="Forces at the Bottom of the Loop")
+except FileNotFoundError:
+    st.warning("Image not found. Please ensure 'top_loop.png' and 'bottom_loop.png' are in the correct directory.")
 
-# YouTube video mapping
-video_mapping = {
-    ("SW", 31): ("M5lSUGeaJz0", 405, 500),
-    ("SW", 15): ("M5lSUGeaJz0", 508, 716),
-    ("EC", 36): ("M5lSUGeaJz0", 732, 940),
-    ("EC", 52): ("M5lSUGeaJz0", 949, 1055)
-    # Add the rest of the mappings here...
-}
+calculation_type = st.sidebar.selectbox("What would you like to solve for:", ["Centripetal Acceleration", "Tangential Velocity", "Radius of the Loop", "Mass", "Centripetal Force", "Normal/Tension Force", "Gravitational Force"], key="unique_calculation_type")
 
-# Search for the corresponding paragraph
-if st.button("Find Paragraph", key="find_paragraph_button") and entry_number is not None:
-    result = df[(df["Location Code"] == location_code) & (df["Entry Number"] == entry_number)]
-    
-    if not result.empty:
-        # Display video for the matching entry if available
-        video_info = video_mapping.get((location_code, entry_number))
-        if video_info:
-            video_id, start_time, end_time = video_info
-            st.markdown(f"""
-                <iframe width="560" height="315" 
-                src="https://www.youtube.com/embed/{video_id}?start={start_time}&controls=1" frameborder="0" allowfullscreen 
-                frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
-            """, unsafe_allow_html=True)
-        
-        st.subheader("Matching Location")
-        st.write(f"<p class='narrative-text'>{result.iloc[0]['Location']}</p>", unsafe_allow_html=True)
-        
-        st.subheader("Matching Paragraph")
-        st.write(f"<p class='narrative-text'>{result.iloc[0]['Full Text']}</p>", unsafe_allow_html=True)
-    else:
-        st.error("No matching entry found. Please check the Location Code and Entry Number.")
+g = 10  # Gravity (m/s²)
+
+if calculation_type == "Centripetal Acceleration":
+    radius = st.sidebar.number_input("Radius (m)", min_value=0.1, value=5.0, step=0.1)
+    velocity = st.sidebar.number_input("Tangential Velocity (m/s)", min_value=0.0, value=5.0, step=0.1)
+    acceleration = calculate_centripetal_acceleration(velocity, radius)
+    st.write(f"Centripetal Acceleration: {acceleration:.2f} m/s²")
+
+elif calculation_type == "Tangential Velocity":
+    acceleration = st.sidebar.number_input("Centripetal Acceleration (m/s²)", min_value=0.1, value=5.0, step=0.1)
+    radius = st.sidebar.number_input("Radius (m)", min_value=0.1, value=5.0, step=0.1)
+    velocity = calculate_tangential_velocity(acceleration, radius)
+    st.write(f"Tangential Velocity: {velocity:.2f} m/s")
+
+elif calculation_type == "Radius of the Loop":
+    velocity = st.sidebar.number_input("Tangential Velocity (m/s)", min_value=0.0, value=5.0, step=0.1)
+    acceleration = st.sidebar.number_input("Centripetal Acceleration (m/s²)", min_value=0.1, value=5.0, step=0.1)
+    radius = calculate_radius(velocity, acceleration)
+    st.write(f"Radius of the Loop: {radius:.2f} m")
+
+elif calculation_type == "Mass":
+    acceleration = st.sidebar.number_input("Acceleration (m/s²)", min_value=0.1, value=5.0, step=0.1)
+    st.write("Mass input required for specific calculations later.")
+
+elif calculation_type == "Centripetal Force":
+    radius = st.sidebar.number_input("Radius (m)", min_value=0.1, value=5.0, step=0.1)
+    velocity = st.sidebar.number_input("Tangential Velocity (m/s)", min_value=0.0, value=5.0, step=0.1)
+    mass = st.sidebar.number_input("Mass (kg)", min_value=0.1, value=1.0, step=0.1)
+    force = calculate_centripetal_force(mass, velocity, radius)
+    st.write(f"Centripetal Force: {force:.2f} N")
+
+elif calculation_type == "Normal/Tension Force":
+    radius = st.sidebar.number_input("Radius (m)", min_value=0.1, value=5.0, step=0.1)
+    velocity = st.sidebar.number_input("Tangential Velocity (m/s)", min_value=0.0, value=5.0, step=0.1)
+    mass = st.sidebar.number_input("Mass (kg)", min_value=0.1, value=1.0, step=0.1)
+    force = calculate_normal_or_tension_force(mass, velocity, radius, g)
+    st.write(f"Normal/Tension Force: {force:.2f} N")
+
+elif calculation_type == "Gravitational Force":
+    mass = st.sidebar.number_input("Mass (kg)", min_value=0.1, value=1.0, step=0.1)
+    force = calculate_gravitational_force(mass, g)
+    st.write(f"Gravitational Force: {force:.2f} N")
