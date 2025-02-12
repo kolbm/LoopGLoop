@@ -77,3 +77,4 @@ elif calculation_type == "Gravitational Force":
     mass = st.sidebar.number_input("Mass (kg)", min_value=0.1, value=1.0, step=0.1)
     force = calculate_gravitational_force(mass, g)
     st.write(f"Gravitational Force: {force:.2f} N")
+ 
