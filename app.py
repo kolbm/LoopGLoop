@@ -16,8 +16,14 @@ def calculate_centripetal_force(m, v, r):
 def calculate_gravitational_force(m, g=10):
     return m * g
 
-def calculate_normal_or_tension_force(m, v, r, g=10):
+def calculate_normal_force_bottom(m, v, r, g=10):
+    """Calculate the normal force at the bottom of the loop."""
     return m * (v**2 / r + g)
+
+def calculate_normal_force_top(m, v, r, g=10):
+    """Calculate the normal force at the top of the loop."""
+    return m * (v**2 / r - g)
+
 
 st.title("Vertical Loop Motion Calculator")
 
@@ -70,8 +76,13 @@ elif calculation_type == "Normal/Tension Force":
     radius = st.sidebar.number_input("Radius (m)", min_value=0.1, value=5.0, step=0.1)
     velocity = st.sidebar.number_input("Tangential Velocity (m/s)", min_value=0.0, value=5.0, step=0.1)
     mass = st.sidebar.number_input("Mass (kg)", min_value=0.1, value=1.0, step=0.1)
-    force = calculate_normal_or_tension_force(mass, velocity, radius, g)
-    st.write(f"Normal/Tension Force: {force:.2f} N")
+    
+    if loop_position == "Bottom of the Loop":
+        force = calculate_normal_force_bottom(mass, velocity, radius, g)
+        st.write(f"Normal/Tension Force at the Bottom: {force:.2f} N")
+    elif loop_position == "Top of the Loop":
+        force = calculate_normal_force_top(mass, velocity, radius, g)
+        st.write(f"Normal/Tension Force at the Top: {force:.2f} N")
 
 elif calculation_type == "Gravitational Force":
     mass = st.sidebar.number_input("Mass (kg)", min_value=0.1, value=1.0, step=0.1)
